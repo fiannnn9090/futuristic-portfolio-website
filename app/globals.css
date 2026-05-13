@@ -1,0 +1,119 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Futuristic Gaming - Deep Black + Electric Cyan + Vivid Purple */
+  --background: #050508;
+  --foreground: #e4e4e7;
+  --card: #0a0a0f;
+  --card-foreground: #e4e4e7;
+  --popover: #0a0a0f;
+  --popover-foreground: #e4e4e7;
+  --primary: #00f0ff;
+  --primary-foreground: #050508;
+  --secondary: #12121a;
+  --secondary-foreground: #a1a1aa;
+  --muted: #18181f;
+  --muted-foreground: #71717a;
+  --accent: #a855f7;
+  --accent-foreground: #fafafa;
+  --destructive: #ef4444;
+  --destructive-foreground: #fafafa;
+  --border: #1f1f2a;
+  --input: #12121a;
+  --ring: #00f0ff;
+  --chart-1: #00f0ff;
+  --chart-2: #a855f7;
+  --chart-3: #22d3ee;
+  --chart-4: #c084fc;
+  --chart-5: #67e8f9;
+  --radius: 0.5rem;
+  
+  /* Neon Colors - Proper Hex */
+  --neon-cyan: #00f0ff;
+  --neon-purple: #a855f7;
+  --neon-magenta: #e879f9;
+}
+
+@theme inline {
+  --font-sans: 'Inter', 'Geist', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-neon-cyan: var(--neon-cyan);
+  --color-neon-purple: var(--neon-purple);
+  --color-neon-magenta: var(--neon-magenta);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .text-glow-cyan {
+    text-shadow: 0 0 10px #00f0ff, 0 0 20px #00f0ff40, 0 0 40px #00f0ff20;
+  }
+  .text-glow-purple {
+    text-shadow: 0 0 10px #a855f7, 0 0 20px #a855f740, 0 0 40px #a855f720;
+  }
+  .box-glow-cyan {
+    box-shadow: 0 0 20px #00f0ff30, 0 0 40px #00f0ff15, inset 0 1px 0 #00f0ff20;
+  }
+  .box-glow-purple {
+    box-shadow: 0 0 20px #a855f730, 0 0 40px #a855f715, inset 0 1px 0 #a855f720;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #050508;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00f0ff, #a855f7);
+  border-radius: 3px;
+}
+
+/* Selection */
+::selection {
+  background: #00f0ff30;
+  color: #00f0ff;
+}
