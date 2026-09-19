@@ -14,3 +14,4 @@ node_modules
 .next/
 .DS_StoreBRIEF-REDESAIN-PORTFOLIO.md
 design-references/
+*.report.html
