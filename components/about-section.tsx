@@ -55,7 +55,7 @@ export function AboutSection() {
           >
             <div className="relative w-full h-[420px] overflow-hidden bg-substrate-1 rounded-[4px]">
               <Image
-                src="../public/profile-photo.jpg"
+                src="/profile-photo.jpg"
                 alt="Foto Aliffian Alham Maesanjaya"
                 fill
                 sizes="(max-width: 1024px) 100vw, 45vw"
