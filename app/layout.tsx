@@ -1,62 +1,64 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
+import { Manrope, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const inter = Inter({ 
+const manrope = Manrope({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-manrope',
+  display: 'swap',
 })
 
-const jetbrainsMono = JetBrains_Mono({ 
+const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   variable: '--font-jetbrains-mono',
+  display: 'swap',
 })
 
 export const metadata: Metadata = {
-  title: 'Portfolio | Programmer • Gamer • Pendaki',
-  description: 'Website portofolio pribadi seorang programmer, gamer, dan pendaki gunung. Mahasiswa Teknologi Informasi yang passionate dalam dunia coding, gaming kompetitif, dan petualangan alam.',
-  keywords: ['portfolio', 'programmer', 'web developer', 'gamer', 'pendaki gunung', 'teknologi informasi', 'react', 'nextjs'],
-  authors: [{ name: 'Developer' }],
+  title: 'Fian | Full-Stack Developer → Data Analyst',
+  description:
+    'Aliffian Alham Maesanjaya — Full-Stack Developer turning Data Analyst / Data Scientist. Mahasiswa Teknik Informatika Universitas Dian Nuswantoro. Membangun aplikasi web & mobile full-stack, kini mendalami analisis data (Python, SQL, Power BI).',
+  keywords: [
+    'portfolio',
+    'data analyst',
+    'data scientist',
+    'full-stack developer',
+    'flutter',
+    'nextjs',
+    'python',
+    'sql',
+    'power bi',
+    'aliffian maesanjaya',
+  ],
+  authors: [{ name: 'Aliffian Alham Maesanjaya' }],
   openGraph: {
-    title: 'Portfolio | Programmer • Gamer • Pendaki',
-    description: 'Website portofolio pribadi seorang programmer, gamer, dan pendaki gunung.',
+    title: 'Fian | Full-Stack Developer → Data Analyst',
+    description:
+      'Full-Stack Developer yang sedang bertransisi ke Data Analyst / Data Scientist. Teknik Informatika, Universitas Dian Nuswantoro.',
     type: 'website',
     locale: 'id_ID',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Portfolio | Programmer • Gamer • Pendaki',
-    description: 'Website portofolio pribadi seorang programmer, gamer, dan pendaki gunung.',
+    title: 'Fian | Full-Stack Developer → Data Analyst',
+    description:
+      'Full-Stack Developer yang sedang bertransisi ke Data Analyst / Data Scientist.',
   },
   icons: {
     icon: [
       {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
+        url: '/logo-monogram.svg',
         type: 'image/svg+xml',
       },
     ],
-    apple: '/apple-icon.png',
   },
 }
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: '(prefers-color-scheme: dark)', color: '#0a0a1a' },
-    { media: '(prefers-color-scheme: light)', color: '#0a0a1a' },
-  ],
+  themeColor: '#0a0a0f',
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 5,
-  userScalable: true,
 }
 
 export default function RootLayout({
@@ -66,7 +68,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" className="bg-background">
-      <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
+      <body
+        className={`${manrope.variable} ${jetbrainsMono.variable} antialiased`}
+      >
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

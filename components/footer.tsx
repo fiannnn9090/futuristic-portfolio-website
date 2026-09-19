@@ -1,119 +1,154 @@
-"use client"
+import Image from "next/image"
+import { Mail, Github, Linkedin, ArrowUpRight } from "lucide-react"
 
-import { motion } from "framer-motion"
-import { Github, Instagram, Linkedin, MessageCircle, Heart, Code2, Gamepad2 } from "lucide-react"
-
-const footerLinks = [
-  { name: "Beranda", href: "#hero" },
-  { name: "Tentang", href: "#about" },
-  { name: "Skills", href: "#skills" },
-  { name: "Project", href: "#projects" },
-  { name: "Prestasi", href: "#achievements" },
-  { name: "Gallery", href: "#gallery" },
+const contactLinks = [
+  {
+    label: "github.com/fiannnn9090",
+    href: "https://github.com/fiannnn9090",
+    icon: Github,
+    accent: "secondary",
+  },
+  {
+    label: "linkedin.com/in/aliffian-maesanjaya",
+    href: "https://www.linkedin.com/in/aliffian-maesanjaya",
+    icon: Linkedin,
+    accent: "violet",
+  },
 ]
 
-const socialLinks = [
-  { icon: Github, href: "https://github.com", label: "GitHub" },
-  { icon: Instagram, href: "https://instagram.com", label: "Instagram" },
-  { icon: Linkedin, href: "https://linkedin.com", label: "LinkedIn" },
-  { icon: MessageCircle, href: "https://discord.com", label: "Discord" },
+const footerNav = [
+  { label: "About", href: "#about" },
+  { label: "Skills", href: "#skills" },
+  { label: "Projects", href: "#projects" },
+  { label: "Stats", href: "#stats" },
+  { label: "Gallery", href: "#gallery" },
 ]
 
 export function Footer() {
   return (
-    <footer className="relative pt-16 pb-8 border-t border-neon-cyan/20">
-      {/* Background Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-32 bg-neon-purple/10 blur-[100px]" />
-      
-      <div className="container mx-auto px-4 lg:px-8 relative z-10">
-        {/* Logo */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-8"
-        >
-          <div className="inline-flex items-center gap-2 mb-4">
-            <Gamepad2 className="w-6 h-6 text-neon-cyan" />
-            <span className="text-2xl font-bold text-gradient-gaming">PORTFOLIO</span>
+    <>
+      {/* ===== Contact section ===== */}
+      <section
+        id="contact"
+        className="w-full max-w-[1200px] mx-auto px-5 md:px-12 pt-20 pb-24 border-t border-border"
+      >
+        <div className="relative rounded-[4px] p-6 md:p-10 bg-card border border-border overflow-hidden">
+          <div className="absolute -top-10 -right-10 w-64 h-64 bg-glow-cyan pointer-events-none" />
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-7 flex flex-col gap-5">
+              <div className="flex items-center gap-2 font-mono text-label-sm uppercase tracking-[0.08em] text-secondary">
+                <span className="w-2 h-2 rounded-full bg-secondary" />
+                Transmission Channel: Ready
+              </div>
+              <h2 className="font-sans text-headline-lg-mobile md:text-headline-lg text-text-primary tracking-tight">
+                Inisiasi kontak &amp; kolaborasi data
+              </h2>
+              <p className="font-mono text-body-lg text-text-secondary max-w-xl leading-relaxed">
+                Terbuka untuk peluang sebagai{" "}
+                <span className="text-text-primary">Data Analyst / Data Scientist</span>{" "}
+                (entry level) maupun proyek full-stack, riset, dan kolaborasi
+                berbasis data.
+              </p>
+
+              <div className="rounded-[4px] p-4 bg-substrate-1 border border-border font-mono text-code-snippet max-w-lg">
+                <div className="flex items-center justify-between text-text-tertiary mb-1.5">
+                  <span>CONTACT_PREF:</span>
+                  <span className="text-secondary">[ EMAIL ]</span>
+                </div>
+                <div className="text-text-primary select-all">
+                  aliffianmsj@gmail.com
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-5 flex flex-col gap-4">
+              <div className="flex flex-col gap-2.5 rounded-[4px] p-5 bg-substrate-1 border border-border">
+                <span className="font-mono text-label-sm uppercase tracking-[0.08em] text-text-tertiary mb-1">
+                  {"// DIRECT_DISPATCH"}
+                </span>
+
+                <a
+                  href="mailto:aliffianmsj@gmail.com"
+                  className="rounded-[4px] p-3 bg-substrate-2 border border-border font-mono text-code-snippet text-text-primary hover:border-secondary transition-colors flex items-center justify-between gap-2"
+                >
+                  <span className="truncate">aliffianmsj@gmail.com</span>
+                  <Mail size={15} className="text-secondary shrink-0" />
+                </a>
+
+                {contactLinks.map((link) => {
+                  const hoverBorder =
+                    link.accent === "secondary"
+                      ? "hover:border-secondary"
+                      : "hover:border-primary"
+                  const iconColor =
+                    link.accent === "secondary"
+                      ? "text-secondary shrink-0"
+                      : "text-primary shrink-0"
+                  return (
+                    <a
+                      key={link.label}
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`rounded-[4px] p-3 bg-substrate-2 border border-border font-mono text-code-snippet text-text-primary transition-colors flex items-center justify-between gap-2 ${hoverBorder}`}
+                    >
+                      <span className="truncate">{link.label}</span>
+                      <link.icon size={15} className={iconColor} />
+                    </a>
+                  )
+                })}
+
+                <a
+                  href="#contact"
+                  className="mt-2 rounded-[4px] px-6 py-3 bg-secondary text-secondary-foreground font-mono text-label-md font-semibold uppercase tracking-[0.08em] border border-secondary glow-cyan text-center transition-all duration-200 hover:bg-white"
+                >
+                  Start Conversation <ArrowUpRight size={14} className="inline" />
+                </a>
+              </div>
+            </div>
           </div>
-          <blockquote className="text-lg text-muted-foreground italic max-w-xl mx-auto">
-            {'"The best way to predict the future is to create it."'}
-          </blockquote>
-          <p className="text-sm text-neon-purple mt-2">— Peter Drucker</p>
-        </motion.div>
+        </div>
+      </section>
 
-        {/* Navigation */}
-        <motion.nav
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.1 }}
-          className="flex flex-wrap justify-center gap-6 mb-8"
-        >
-          {footerLinks.map((link) => (
-            <a
-              key={link.name}
-              href={link.href}
-              className="text-sm text-muted-foreground hover:text-neon-cyan transition-colors relative group"
-            >
-              {link.name}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-neon-cyan to-neon-purple group-hover:w-full transition-all duration-300" />
-            </a>
-          ))}
-        </motion.nav>
-
-        {/* Social Links */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-          className="flex justify-center gap-3 mb-8"
-        >
-          {socialLinks.map((social, index) => (
-            <motion.a
-              key={social.label}
-              href={social.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.1, y: -3 }}
-              className={`p-3 rounded-lg border transition-all duration-300 ${
-                index % 2 === 0 
-                  ? 'border-neon-cyan/30 text-neon-cyan hover:bg-neon-cyan/10 hover:neon-glow-cyan' 
-                  : 'border-neon-purple/30 text-neon-purple hover:bg-neon-purple/10 hover:neon-glow-purple'
-              }`}
-              aria-label={social.label}
-            >
-              <social.icon className="w-5 h-5" />
-            </motion.a>
-          ))}
-        </motion.div>
-
-        {/* Divider */}
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-neon-cyan/30 to-transparent mb-8" />
-
-        {/* Copyright */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
-          className="text-center"
-        >
-          <p className="text-sm text-muted-foreground flex items-center justify-center gap-2 flex-wrap">
-            <span>© {new Date().getFullYear()}</span>
-            <span className="font-semibold text-gradient-gaming">Developer Portfolio</span>
-            <span className="text-neon-cyan">·</span>
-            <span className="flex items-center gap-1">
-              Dibuat dengan <Heart className="w-3.5 h-3.5 text-neon-pink fill-neon-pink" /> dan <Code2 className="w-3.5 h-3.5 text-neon-cyan" />
+      {/* ===== Footer bar ===== */}
+      <footer className="w-full bg-background border-t border-border py-10">
+        <div className="max-w-[1200px] mx-auto px-5 md:px-12 flex flex-col md:flex-row items-center justify-between gap-6 font-mono text-code-snippet text-text-secondary">
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <Image
+              src="/logo-monogram.svg"
+              alt="Monogram Aliffian Maesanjaya"
+              width={24}
+              height={24}
+              className="h-6 w-auto"
+              unoptimized
+            />
+            <span className="text-text-tertiary">
+              © {new Date().getFullYear()} FIAN.DEV. ALL_SYSTEMS_OPERATIONAL.
             </span>
-          </p>
-          <p className="text-xs text-muted-foreground/60 mt-2">
-            Built with Next.js, Tailwind CSS, dan Framer Motion
-          </p>
-        </motion.div>
-      </div>
-    </footer>
+            <span className="hidden lg:inline px-2 py-0.5 rounded-[4px] bg-substrate-1 font-mono text-label-sm uppercase tracking-[0.08em] text-secondary">
+              BUILD_V3.0
+            </span>
+          </div>
+
+          <nav className="flex flex-wrap items-center justify-center gap-4">
+            {footerNav.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="font-mono text-label-sm uppercase tracking-[0.08em] text-text-secondary hover:text-secondary transition-colors"
+              >
+                [{link.label}]
+              </a>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2 text-text-tertiary">
+            <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
+            <span>SYS.NORMAL</span>
+          </div>
+        </div>
+      </footer>
+    </>
   )
 }

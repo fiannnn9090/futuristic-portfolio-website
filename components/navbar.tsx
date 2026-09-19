@@ -1,107 +1,131 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X, Terminal } from "lucide-react"
+import { useEffect, useState } from "react"
+import Image from "next/image"
+import { Menu, X } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 const navItems = [
-  { name: "Beranda", href: "#hero" },
-  { name: "Tentang", href: "#about" },
-  { name: "Skill", href: "#skills" },
-  { name: "Project", href: "#projects" },
-  { name: "Prestasi", href: "#achievements" },
-  { name: "Gallery", href: "#gallery" },
+  { label: "01. About", href: "#about" },
+  { label: "02. Skills", href: "#skills" },
+  { label: "03. Projects", href: "#projects" },
+  { label: "04. Stats", href: "#stats" },
+  { label: "05. Contact", href: "#contact" },
 ]
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
+  /*
+   * scrolled state ditoggle lewat IntersectionObserver pada sebuah sentinel
+   * di atas halaman, BUKAN window.scrollY di tiap event scroll. Observer
+   * hanya memanggil setState ketika threshold dilintasi (jarang), jadi
+   * backdrop-blur toggle tidak men-trigger re-render per piksel scroll.
+   */
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
+    const sentinel = document.getElementById("nav-sentinel")
+    if (!sentinel || typeof IntersectionObserver === "undefined") return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsScrolled(!entry.isIntersecting),
+      { rootMargin: "-56px 0px 0px 0px" }
+    )
+    observer.observe(sentinel)
+    return () => observer.disconnect()
   }, [])
 
   return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-[#050508]/90 backdrop-blur-xl border-b border-[#1f1f2a] py-3"
-          : "bg-transparent py-5"
-      }`}
-    >
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="flex items-center justify-between">
-          <motion.a
-            href="#hero"
-            className="flex items-center gap-2 text-lg font-bold"
-            whileHover={{ scale: 1.02 }}
-          >
-            <div className="w-8 h-8 rounded-md bg-[#00f0ff]/10 border border-[#00f0ff]/30 flex items-center justify-center">
-              <Terminal className="w-4 h-4 text-[#00f0ff]" />
-            </div>
-            <span className="text-[#e4e4e7] font-mono text-sm">
-              <span className="text-[#00f0ff]">dev</span>.portfolio
+    <>
+      <header
+        className={cn(
+          "fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color] duration-300",
+          isScrolled
+            ? "bg-background/85 backdrop-blur-xl border-b border-border"
+            : "bg-transparent border-b border-transparent"
+        )}
+      >
+        <div className="h-16 max-w-[1200px] mx-auto px-5 md:px-12 flex items-center justify-between gap-4">
+          {/* Brand / monogram */}
+          <a href="#top" className="flex items-center gap-3 shrink-0">
+            <Image
+              src="/logo-monogram.svg"
+              alt="Monogram Aliffian Maesanjaya"
+              width={32}
+              height={32}
+              className="h-8 w-auto"
+              priority
+              unoptimized
+            />
+            <span className="font-sans font-semibold tracking-tight text-text-primary uppercase hidden sm:inline-block">
+              Fian.dev{" "}
+              <span className="font-mono text-label-sm text-text-tertiary tracking-[0.08em]">
+                {"// ANALYST"}
+              </span>
             </span>
-          </motion.a>
+          </a>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
-            {navItems.map((item, index) => (
-              <motion.a
-                key={item.name}
+          {/* Desktop nav */}
+          <nav className="hidden lg:flex items-center gap-6">
+            {navItems.map((item) => (
+              <a
+                key={item.href}
                 href={item.href}
-                className="relative px-4 py-2 text-sm text-[#71717a] hover:text-[#e4e4e7] transition-colors rounded-md hover:bg-[#1f1f2a]/50"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
+                className="font-mono text-label-md uppercase tracking-[0.08em] text-text-secondary hover:text-secondary transition-colors"
               >
-                {item.name}
-              </motion.a>
+                {"// "}
+                {item.label}
+              </a>
             ))}
+          </nav>
+
+          {/* Status chip */}
+          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-[4px] bg-substrate-1 border border-border">
+            <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
+            <span className="font-mono text-label-sm uppercase tracking-[0.08em] text-text-secondary">
+              Open to work
+            </span>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile toggle */}
           <button
-            className="md:hidden p-2 text-[#71717a] hover:text-[#00f0ff] hover:bg-[#1f1f2a] rounded-lg transition-colors"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle menu"
+            className="lg:hidden p-2 -mr-2 text-text-secondary hover:text-secondary transition-colors"
+            onClick={() => setIsOpen((v) => !v)}
+            aria-label="Toggle navigation"
+            aria-expanded={isOpen}
           >
-            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            {isOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
 
-        {/* Mobile Navigation */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden mt-4 overflow-hidden"
-            >
-              <div className="flex flex-col py-4 gap-1 border-t border-[#1f1f2a]">
-                {navItems.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    className="text-[#71717a] hover:text-[#e4e4e7] hover:bg-[#1f1f2a] transition-colors py-2.5 px-3 rounded-md text-sm"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {item.name}
-                  </a>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </motion.nav>
+        {/* Mobile menu */}
+        {isOpen && (
+          <div className="lg:hidden bg-background/95 backdrop-blur-xl border-b border-border">
+            <nav className="max-w-[1200px] mx-auto px-5 md:px-12 py-4 flex flex-col gap-1">
+              {navItems.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setIsOpen(false)}
+                  className="py-2.5 px-3 rounded-[4px] font-mono text-label-md uppercase tracking-[0.08em] text-text-secondary hover:text-secondary hover:bg-substrate-1 transition-colors"
+                >
+                  {"// "}
+                  {item.label}
+                </a>
+              ))}
+              <a
+                href="https://github.com/fiannnn9090"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setIsOpen(false)}
+                className="py-2.5 px-3 rounded-[4px] font-mono text-label-md uppercase tracking-[0.08em] text-secondary hover:text-white hover:bg-substrate-1 transition-colors"
+              >
+                // github: fiannnn9090
+              </a>
+            </nav>
+          </div>
+        )}
+      </header>
+    </>
   )
 }

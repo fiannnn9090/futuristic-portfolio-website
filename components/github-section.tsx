@@ -1,215 +1,213 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { useInView } from "framer-motion"
-import { useRef } from "react"
-import { GitCommit, GitPullRequest, Star, Code2, Flame, Calendar } from "lucide-react"
+import { Star, Users, Boxes, Code2, RefreshCw } from "lucide-react"
+import { SectionHeader } from "@/components/section-header"
+import type { GithubStatsResponse } from "@/lib/github"
 
-const githubStats = {
-  totalCommits: "1,200+",
-  totalRepos: "45+",
-  pullRequests: "120+",
-  stars: "50+",
-  currentStreak: "30",
-  longestStreak: "90",
+function daysAgo(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime()
+  const days = Math.max(0, Math.floor(diff / 86_400_000))
+  if (days === 0) return "hari ini"
+  if (days === 1) return "1 hari lalu"
+  if (days < 30) return `${days} hari lalu`
+  return new Date(iso).toLocaleDateString("id-ID", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  })
 }
 
-const recentActivity = [
-  { type: "commit", message: "feat: implement blockchain voting system", repo: "e-voting-app", time: "2 jam lalu" },
-  { type: "pr", message: "Add QRIS payment integration", repo: "kasir-app", time: "5 jam lalu" },
-  { type: "commit", message: "fix: resolve authentication bug", repo: "resto-system", time: "1 hari lalu" },
-  { type: "commit", message: "style: update UI components", repo: "gaming-profile", time: "2 hari lalu" },
-]
-
-const techStack = [
-  "JavaScript", "TypeScript", "React", "Next.js", "Node.js", 
-  "PHP", "Laravel", "MySQL", "MongoDB", "Tailwind CSS"
-]
+function MetricSkeleton() {
+  return (
+    <>
+      {[0, 1, 2, 3].map((i) => (
+        <div
+          key={i}
+          className="rounded-[4px] p-5 bg-card border border-border"
+        >
+          <div className="h-3 w-24 rounded-[2px] bg-substrate-2 animate-pulse mb-3" />
+          <div className="h-7 w-16 rounded-[2px] bg-substrate-2 animate-pulse mb-2" />
+          <div className="h-3 w-32 rounded-[2px] bg-substrate-2 animate-pulse" />
+        </div>
+      ))}
+    </>
+  )
+}
 
 export function GithubSection() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const [data, setData] = useState<GithubStatsResponse | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  const load = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetch("/api/github-stats", { cache: "no-store" })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      setData((await res.json()) as GithubStatsResponse)
+    } catch {
+      setError(
+        "Gagal mengambil data GitHub — kemungkinan rate-limit API. Coba lagi beberapa saat."
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    load()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const metricTiles = data
+    ? [
+        { icon: Users, label: "FOLLOWERS", value: String(data.followers), sub: `@${data.login}` },
+        { icon: Boxes, label: "PUBLIC_REPOS", value: String(data.public_repos), sub: "Non-fork counts" },
+        { icon: Star, label: "TOTAL_STARS", value: String(data.totalStars), sub: "Across all repos" },
+        { icon: Code2, label: "TOP_LANGUAGE", value: data.topLanguage ?? "—", sub: "Most frequent" },
+      ]
+    : []
 
   return (
-    <section id="github" className="py-24 relative overflow-hidden">
-      {/* Background Effect */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neon-purple/5 to-transparent" />
-      
-      <div className="container mx-auto px-4 lg:px-8 relative z-10" ref={ref}>
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-          className="mb-12"
-        >
-          <h2 className="text-2xl md:text-3xl font-bold mb-3">
-            <span className="text-gradient-gaming">GitHub Activity</span>
-          </h2>
-          <p className="text-muted-foreground">
-            Statistik dan aktivitas coding
-          </p>
-          <div className="w-16 h-1 bg-gradient-to-r from-neon-cyan to-neon-purple rounded-full mt-4" />
-        </motion.div>
+    <section
+      id="stats"
+      className="w-full max-w-[1200px] mx-auto px-5 md:px-12 py-20 border-t border-border"
+    >
+      <SectionHeader label="// 05. Telemetry & GitHub Repositories" note="LIVE_API_SOURCE" />
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Stats Cards */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="space-y-4"
-          >
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { icon: GitCommit, value: githubStats.totalCommits, label: "Commits", color: "cyan" },
-                { icon: Code2, value: githubStats.totalRepos, label: "Repos", color: "purple" },
-                { icon: GitPullRequest, value: githubStats.pullRequests, label: "PRs", color: "cyan" },
-                { icon: Star, value: githubStats.stars, label: "Stars", color: "purple" },
-              ].map((stat, index) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
-                  whileHover={{ scale: 1.05 }}
-                  className={`p-4 rounded-lg border bg-card transition-all duration-300 ${
-                    stat.color === 'cyan' 
-                      ? 'border-neon-cyan/20 hover:border-neon-cyan/50 hover:neon-glow-cyan' 
-                      : 'border-neon-purple/20 hover:border-neon-purple/50 hover:neon-glow-purple'
-                  }`}
-                >
-                  <stat.icon className={`w-4 h-4 mb-2 ${
-                    stat.color === 'cyan' ? 'text-neon-cyan' : 'text-neon-purple'
-                  }`} />
-                  <div className={`text-xl font-bold ${
-                    stat.color === 'cyan' ? 'text-neon-cyan' : 'text-neon-purple'
-                  }`}>{stat.value}</div>
-                  <div className="text-xs text-muted-foreground">{stat.label}</div>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Streak */}
-            <motion.div 
-              whileHover={{ scale: 1.02 }}
-              className="p-4 rounded-lg border border-neon-cyan/20 bg-card hover:border-neon-cyan/50 transition-all"
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-60px" }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+      >
+        {/* Error fallback */}
+        {error && !data && (
+          <div className="rounded-[4px] p-6 bg-card border border-border mb-8">
+            <p className="font-mono text-body-md text-text-secondary mb-4">
+              <span className="text-primary">// WARN</span> {error}
+            </p>
+            <button
+              onClick={load}
+              className="inline-flex items-center gap-2 rounded-[4px] px-4 py-2 bg-substrate-1 border border-border font-mono text-label-md text-secondary hover:border-secondary transition-colors"
             >
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Flame className="w-5 h-5 text-orange-500" />
-                  <span className="text-sm font-semibold text-foreground">Streak</span>
-                </div>
-                <Calendar className="w-4 h-4 text-neon-purple" />
-              </div>
-              <div className="flex justify-between">
-                <div>
-                  <div className="text-2xl font-bold text-neon-cyan">{githubStats.currentStreak}</div>
-                  <div className="text-xs text-muted-foreground">Current</div>
-                </div>
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-neon-purple">{githubStats.longestStreak}</div>
-                  <div className="text-xs text-muted-foreground">Longest</div>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
+              <RefreshCw size={14} />
+              retry
+            </button>
+          </div>
+        )}
 
-          {/* Contribution Graph */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="p-5 rounded-lg border border-neon-purple/20 bg-card"
-          >
-            <h3 className="text-sm font-semibold text-foreground mb-4">Contributions</h3>
-            <div className="grid grid-cols-12 gap-1">
-              {[...Array(84)].map((_, i) => {
-                const intensity = Math.random()
-                return (
-                  <motion.div
-                    key={i}
-                    initial={{ scale: 0 }}
-                    animate={isInView ? { scale: 1 } : {}}
-                    transition={{ duration: 0.2, delay: 0.3 + i * 0.005 }}
-                    className={`aspect-square rounded-sm ${
-                      intensity > 0.8
-                        ? "bg-neon-cyan neon-glow-cyan"
-                        : intensity > 0.6
-                        ? "bg-neon-cyan/70"
-                        : intensity > 0.4
-                        ? "bg-neon-purple/50"
-                        : intensity > 0.2
-                        ? "bg-neon-purple/20"
-                        : "bg-secondary"
-                    }`}
-                  />
-                )
-              })}
-            </div>
-            <div className="flex items-center justify-end gap-1.5 mt-4 text-xs text-muted-foreground">
-              <span>Less</span>
-              <div className="flex gap-0.5">
-                <div className="w-2.5 h-2.5 rounded-sm bg-secondary" />
-                <div className="w-2.5 h-2.5 rounded-sm bg-neon-purple/20" />
-                <div className="w-2.5 h-2.5 rounded-sm bg-neon-purple/50" />
-                <div className="w-2.5 h-2.5 rounded-sm bg-neon-cyan/70" />
-                <div className="w-2.5 h-2.5 rounded-sm bg-neon-cyan" />
+        {/* 4 metric tiles */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+          {loading && !data ? (
+            <MetricSkeleton />
+          ) : (
+            metricTiles.map((stat) => (
+              <div
+                key={stat.label}
+                className="rounded-[4px] p-5 bg-card border border-border"
+              >
+                <stat.icon size={14} className="text-text-tertiary mb-3" />
+                <div className="font-mono text-label-sm uppercase tracking-[0.08em] text-text-tertiary mb-1 block">
+                  {stat.label}
+                </div>
+                <div className="font-sans text-headline-lg font-bold text-text-primary">
+                  {stat.value}
+                </div>
+                <div className="font-mono text-code-snippet text-text-secondary mt-1">
+                  {stat.sub}
+                </div>
               </div>
-              <span>More</span>
-            </div>
-          </motion.div>
-
-          {/* Recent Activity & Tech Stack */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="space-y-4"
-          >
-            <div className="p-5 rounded-lg border border-neon-cyan/20 bg-card">
-              <h3 className="text-sm font-semibold text-foreground mb-4">Recent Activity</h3>
-              <div className="space-y-3">
-                {recentActivity.map((activity, index) => (
-                  <motion.div 
-                    key={index} 
-                    className="flex items-start gap-3 text-sm group"
-                    whileHover={{ x: 5 }}
-                  >
-                    {activity.type === "commit" ? (
-                      <GitCommit className="w-4 h-4 text-neon-cyan mt-0.5 shrink-0" />
-                    ) : (
-                      <GitPullRequest className="w-4 h-4 text-neon-purple mt-0.5 shrink-0" />
-                    )}
-                    <div className="min-w-0">
-                      <p className="text-foreground truncate group-hover:text-neon-cyan transition-colors">{activity.message}</p>
-                      <p className="text-xs text-muted-foreground">{activity.repo} · {activity.time}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-
-            <div className="p-5 rounded-lg border border-neon-purple/20 bg-card">
-              <h3 className="text-sm font-semibold text-foreground mb-3">Tech Stack</h3>
-              <div className="flex flex-wrap gap-1.5">
-                {techStack.map((tech, index) => (
-                  <motion.span
-                    key={tech}
-                    whileHover={{ scale: 1.1 }}
-                    className={`px-2 py-1 text-xs rounded border ${
-                      index % 2 === 0 
-                        ? 'bg-neon-cyan/10 border-neon-cyan/30 text-neon-cyan' 
-                        : 'bg-neon-purple/10 border-neon-purple/30 text-neon-purple'
-                    }`}
-                  >
-                    {tech}
-                  </motion.span>
-                ))}
-              </div>
-            </div>
-          </motion.div>
+            ))
+          )}
         </div>
-      </div>
+
+        {data && (
+          <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6">
+            {/* Commit intensity matrix — placeholder netral */}
+            <div className="lg:col-span-5 rounded-[4px] p-6 bg-card border border-border">
+              <div className="flex items-center justify-between pb-4 mb-4 border-b border-border font-mono text-code-snippet">
+                <span className="text-text-primary font-semibold">
+                  {"// COMMIT_INTENSITY_MATRIX"}
+                </span>
+                <span className="text-text-tertiary text-label-sm uppercase tracking-[0.08em]">
+                  placeholder
+                </span>
+              </div>
+
+              {/*
+                TODO: perlu GitHub GraphQL API + token untuk contribution calendar
+                asli, tidak tersedia lewat REST publik.
+              */}
+              <div className="flex items-center justify-between py-2">
+                <span className="w-2 h-2 bg-substrate-2" />
+                <div className="flex-1 mx-4 h-[148px] opacity-40 [background-image:repeating-linear-gradient(0deg,#1a1a24_0_9px,transparent_9px_12px),repeating-linear-gradient(90deg,#1a1a24_0_9px,transparent_9px_12px)]" />
+                <span className="font-mono text-label-sm uppercase tracking-[0.08em] text-text-tertiary">
+                  GRID: GREY (STATIC)
+                </span>
+              </div>
+              <div className="flex items-center justify-end gap-2 mt-3 font-mono text-label-sm uppercase tracking-[0.08em] text-text-tertiary">
+                <span>LOW</span>
+                <span className="w-2.5 h-2.5 rounded-[2px] bg-substrate-2 inline-block" />
+                <span className="w-2.5 h-2.5 rounded-[2px] bg-substrate-2 inline-block" />
+                <span className="w-2.5 h-2.5 rounded-[2px] bg-substrate-2 inline-block" />
+                <span>HIGH</span>
+              </div>
+              <p className="mt-4 font-mono text-code-snippet text-text-tertiary leading-relaxed border-t border-border pt-4">
+                {`// contribution calendar penuh butuh GraphQL API + token (TODO).
+                // placeholder netral dipertahankan — tanpa data palsu.`}
+              </p>
+            </div>
+
+            {/* Recent repos from API */}
+            <div className="lg:col-span-7 rounded-[4px] p-6 bg-card border border-border">
+              <div className="flex items-center justify-between pb-3 mb-3 border-b border-border font-mono text-code-snippet">
+                <span className="text-text-primary font-semibold">
+                  {"// RECENT_REPOS"}
+                </span>
+                <span className="text-text-tertiary">REMOTE: github / fiannnn9090</span>
+              </div>
+
+              {data.recentRepos.length === 0 ? (
+                <p className="py-6 font-mono text-code-snippet text-text-tertiary">
+                  Belum ada repository publik.
+                </p>
+              ) : (
+                <div className="flex flex-col divide-y divide-border">
+                  {data.recentRepos.map((repo) => (
+                    <a
+                      key={repo.name}
+                      href={repo.html_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="py-3 flex flex-col md:flex-row md:items-center justify-between gap-2 hover:translate-x-1 transition-transform group"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-secondary font-semibold shrink-0">
+                          {repo.language ?? "—"}
+                        </span>
+                        <span className="text-text-primary truncate group-hover:text-secondary transition-colors">
+                          {repo.name}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-4 font-mono text-label-sm text-text-tertiary shrink-0">
+                        <span className="inline-flex items-center gap-1">
+                          <Star size={11} />
+                          {repo.stars}
+                        </span>
+                        <span>{daysAgo(repo.updated_at)}</span>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </motion.div>
     </section>
   )
 }

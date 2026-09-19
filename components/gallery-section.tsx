@@ -1,200 +1,106 @@
 "use client"
 
+import Image from "next/image"
 import { motion } from "framer-motion"
-import { useInView } from "framer-motion"
-import { useRef, useState } from "react"
-import { X, Code2, Gamepad2, Mountain, Monitor } from "lucide-react"
+import { SectionHeader } from "@/components/section-header"
 
-const galleryItems = [
+const artifacts = [
   {
-    id: 1,
-    title: "Setup Coding",
-    category: "Coding",
-    icon: Code2,
-    description: "Workspace untuk ngoding sehari-hari",
+    index: "ART_01",
+    tag: "GAME_ENGINE",
+    tagAccent: "cyan",
+    title: "Number Shift — Endless Board",
+    description: "Board 9×12 (108 tile) dengan sistem combo, Perfect Match, dan deteksi deadlock deterministik.",
+    image: "/gallery/number-shift-board.png",
   },
   {
-    id: 2,
-    title: "Gaming Setup",
-    category: "Gaming",
-    icon: Monitor,
-    description: "Battle station untuk competitive gaming",
+    index: "ART_02",
+    tag: "FINANCIAL_ANALYTICS",
+    tagAccent: "violet",
+    title: "RAPI — Analisis Keuangan",
+    description: "Health score gauge, alokasi 50/30/20, dan rule-based advice dari data transaksi.",
+    image: "/gallery/rapi-analytics.png",
   },
   {
-    id: 3,
-    title: "Summit Semeru",
-    category: "Pendakian",
-    icon: Mountain,
-    description: "Puncak Mahameru 3.676 mdpl",
-  },
-  {
-    id: 4,
-    title: "Hackathon Team",
-    category: "Coding",
-    icon: Code2,
-    description: "Tim hackathon nasional 2024",
-  },
-  {
-    id: 5,
-    title: "Tournament PUBGM",
-    category: "Gaming",
-    icon: Gamepad2,
-    description: "Final tournament regional",
-  },
-  {
-    id: 6,
-    title: "Basecamp Rinjani",
-    category: "Pendakian",
-    icon: Mountain,
-    description: "Perjalanan ke Gunung Rinjani",
-  },
-  {
-    id: 7,
-    title: "Workshop Tech",
-    category: "Coding",
-    icon: Code2,
-    description: "Mengisi workshop web development",
-  },
-  {
-    id: 8,
-    title: "Sunrise di Prau",
-    category: "Pendakian",
-    icon: Mountain,
-    description: "Golden sunrise Gunung Prau",
+    index: "ART_03",
+    tag: "BLOCKCHAIN_LEDGER",
+    tagAccent: "cyan",
+    title: "E-Voting — Ledger & Audit",
+    description: "Tiga ledger paralel (Vote/Candidate/Audit) dengan Merkle Tree & RSA-2048.",
+    image: null,
   },
 ]
 
-const categories = ["Semua", "Coding", "Gaming", "Pendakian"]
-
 export function GallerySection() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: "-100px" })
-  const [selectedCategory, setSelectedCategory] = useState("Semua")
-  const [selectedImage, setSelectedImage] = useState<number | null>(null)
-
-  const filteredItems = selectedCategory === "Semua" 
-    ? galleryItems 
-    : galleryItems.filter(item => item.category === selectedCategory)
-
   return (
-    <section id="gallery" className="py-24 relative">
-      <div className="container mx-auto px-4 lg:px-8" ref={ref}>
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-          className="mb-12"
-        >
-          <h2 className="text-2xl md:text-3xl font-bold mb-3">
-            <span className="text-gradient-gaming">Gallery</span>
-          </h2>
-          <p className="text-muted-foreground">
-            Dokumentasi perjalanan di dunia coding, gaming, dan petualangan
-          </p>
-          <div className="w-16 h-1 bg-gradient-to-r from-neon-cyan to-neon-purple rounded-full mt-4" />
-        </motion.div>
+    <section
+      id="gallery"
+      className="w-full max-w-[1200px] mx-auto px-5 md:px-12 py-20 border-t border-border"
+    >
+      <SectionHeader label="// 06. Project Artifacts & Lab" note="SANDBOX: ACTIVE" />
 
-        {/* Category Filter */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="flex gap-2 mb-8 flex-wrap"
-        >
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
-                selectedCategory === category
-                  ? "bg-gradient-to-r from-neon-cyan to-neon-purple text-background neon-glow-cyan"
-                  : "bg-card border border-border text-muted-foreground hover:border-neon-cyan/50 hover:text-neon-cyan"
-              }`}
-            >
-              {category}
-            </button>
-          ))}
-        </motion.div>
-
-        {/* Gallery Grid */}
-        <motion.div 
-          layout
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"
-        >
-          {filteredItems.map((item, index) => (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {artifacts.map((artifact, i) => {
+          const tagColor =
+            artifact.tagAccent === "cyan" ? "text-secondary" : "text-primary"
+          const hoverBorder =
+            artifact.tagAccent === "cyan"
+              ? "hover:border-secondary/40"
+              : "hover:border-primary/40"
+          return (
             <motion.div
-              key={item.id}
-              layout
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
-              onClick={() => setSelectedImage(item.id)}
-              className="relative aspect-square rounded-lg border border-border bg-card overflow-hidden cursor-pointer group hover:border-neon-cyan/50 transition-all duration-300"
+              key={artifact.index}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className={`group rounded-[4px] bg-card border border-border overflow-hidden transition-colors duration-200 flex flex-col ${hoverBorder}`}
             >
-              {/* Background Pattern */}
-              <div className="absolute inset-0 bg-gradient-to-br from-neon-cyan/5 to-neon-purple/5" />
-              <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:15px_15px]" />
-              
-              {/* Placeholder with Icon */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <item.icon className="w-12 h-12 text-muted-foreground/20 group-hover:text-neon-cyan/40 group-hover:scale-110 transition-all duration-300" />
-              </div>
-              
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="absolute bottom-0 left-0 right-0 p-3">
-                  <h4 className="text-sm font-semibold text-neon-cyan">{item.title}</h4>
-                  <p className="text-xs text-muted-foreground">{item.category}</p>
+              <div className="relative aspect-square w-full bg-substrate-1 overflow-hidden">
+                {artifact.image ? (
+                  <Image
+                    src={artifact.image}
+                    alt={artifact.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="absolute inset-0 opacity-[0.05] [background:repeating-linear-gradient(0deg,transparent,transparent_19px,#00f0ff_19px,#00f0ff_20px),repeating-linear-gradient(90deg,transparent,transparent_19px,#00f0ff_19px,#00f0ff_20px)]" />
+                    <div className="relative text-center">
+                      <p className="font-mono text-label-sm uppercase tracking-[0.08em] text-text-tertiary">
+                        {"// screenshot pending"}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                <div
+                  className={`absolute top-2 left-2 rounded-[4px] px-2 py-0.5 bg-substrate-1/90 border border-border font-mono text-label-sm uppercase tracking-[0.08em] ${tagColor}`}
+                >
+                  {artifact.tag}
                 </div>
               </div>
 
-              {/* Corner Glow Effect */}
-              <div className="absolute top-0 right-0 w-16 h-16 bg-neon-purple/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-            </motion.div>
-          ))}
-        </motion.div>
+              <div className="p-5 flex flex-col flex-1">
+                <span className="font-mono text-label-sm uppercase tracking-[0.08em] text-text-tertiary mb-1">
+                  {artifact.index}
+                </span>
+                <h4 className="font-sans text-headline-sm text-text-primary mb-2">
+                  {artifact.title}
+                </h4>
+                <p className="font-mono text-code-snippet text-text-secondary leading-relaxed">
+                  {artifact.description}
+                </p>
+              </div>
 
-        {/* Lightbox Modal */}
-        {selectedImage !== null && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-background/95 backdrop-blur-md p-4"
-            onClick={() => setSelectedImage(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="relative max-w-lg w-full rounded-lg border border-neon-cyan/30 bg-card p-6 neon-glow-cyan"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={() => setSelectedImage(null)}
-                className="absolute top-4 right-4 p-2 rounded-lg hover:bg-neon-cyan/10 transition-colors text-neon-cyan"
-                aria-label="Close"
-              >
-                <X className="w-5 h-5" />
-              </button>
-              
-              {(() => {
-                const item = galleryItems.find(i => i.id === selectedImage)
-                if (!item) return null
-                return (
-                  <>
-                    <div className="aspect-video bg-gradient-to-br from-neon-cyan/10 to-neon-purple/10 rounded-lg flex items-center justify-center mb-4 border border-border">
-                      <item.icon className="w-20 h-20 text-neon-cyan/30" />
-                    </div>
-                    <h3 className="text-lg font-bold text-gradient-gaming mb-1">{item.title}</h3>
-                    <p className="text-sm text-muted-foreground">{item.description}</p>
-                  </>
-                )
-              })()}
+              <div className="pt-4 mt-auto px-5 pb-4 border-t border-border flex items-center justify-between font-mono text-label-sm uppercase tracking-[0.08em]">
+                <span className={tagColor}>[ view_artifact ↗ ]</span>
+                <span className="text-text-tertiary">{`0${i + 1}`}</span>
+              </div>
             </motion.div>
-          </motion.div>
-        )}
+          )
+        })}
       </div>
     </section>
   )

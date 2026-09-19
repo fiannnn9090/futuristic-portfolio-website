@@ -1,99 +1,123 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { useInView } from "framer-motion"
-import { useRef } from "react"
+import { SectionHeader } from "@/components/section-header"
 
-const skills = [
-  { name: "HTML", level: 95, category: "Frontend" },
-  { name: "CSS", level: 90, category: "Frontend" },
-  { name: "JavaScript", level: 88, category: "Frontend" },
-  { name: "React", level: 85, category: "Frontend" },
-  { name: "PHP", level: 80, category: "Backend" },
-  { name: "MySQL", level: 82, category: "Backend" },
-  { name: "UI/UX", level: 78, category: "Design" },
-  { name: "GitHub", level: 85, category: "Tools" },
-  { name: "Blockchain", level: 70, category: "Web3" },
-  { name: "Cyber Security", level: 65, category: "Security" },
+const categories = [
+  {
+    layer: "LAYER 00",
+    title: "Data & Analytics",
+    description: "Eksplorasi, pembersihan, dan visualisasi data untuk keputusan berbasis bukti.",
+    footer: "// EVIDENCE_DRIVEN",
+    accent: "cyan",
+    skills: [
+      { name: "Python", level: 70 },
+      { name: "SQL", level: 74 },
+      { name: "Excel", level: 72 },
+      { name: "Power BI", level: 60 },
+    ],
+  },
+  {
+    layer: "LAYER 01",
+    title: "Core Systems / Backend",
+    description: "API, desain database, dan logika domain yang deterministik dan teruji.",
+    footer: "// API_&_DATA_PIPELINES",
+    accent: "violet",
+    skills: [
+      { name: "Node.js · Express", level: 80 },
+      { name: "PHP · Laravel", level: 72 },
+      { name: "MySQL", level: 76 },
+      { name: "MongoDB", level: 65 },
+    ],
+  },
+  {
+    layer: "LAYER 02",
+    title: "Frontend & Mobile",
+    description: "Antarmuka reaktif dan cepat — web maupun mobile native.",
+    footer: "// INTERFACE_ENGINE",
+    accent: "cyan",
+    skills: [
+      { name: "React", level: 78 },
+      { name: "Next.js", level: 76 },
+      { name: "TypeScript", level: 72 },
+      { name: "Tailwind", level: 78 },
+      { name: "Flutter / Dart", level: 70 },
+    ],
+  },
+  {
+    layer: "LAYER 03",
+    title: "Tools & Infra",
+    description: "Workflow kolaboratif dan infrastruktur ringan untuk ship cepat.",
+    footer: "// DEPLOY_&_COLLAB",
+    accent: "violet",
+    skills: [
+      { name: "Git / GitHub", level: 82 },
+      { name: "Supabase", level: 70 },
+      { name: "Docker", level: 55 },
+    ],
+  },
 ]
 
 export function SkillsSection() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: "-100px" })
-
   return (
-    <section id="skills" className="py-24 relative overflow-hidden">
-      {/* Subtle Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#a855f7]/[0.02] to-transparent" />
-      
-      <div className="container mx-auto px-4 lg:px-8 relative z-10" ref={ref}>
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-          className="mb-12"
-        >
-          <p className="text-[#a855f7] text-sm font-mono mb-2">// skills</p>
-          <h2 className="text-2xl md:text-3xl font-bold text-[#e4e4e7] mb-2">
-            Tech Stack
-          </h2>
-          <p className="text-[#71717a]">
-            Teknologi dan tools yang saya kuasai
-          </p>
-        </motion.div>
+    <section
+      id="skills"
+      className="w-full max-w-[1200px] mx-auto px-5 md:px-12 py-20 border-t border-border"
+    >
+      <SectionHeader
+        label="// 02. Technical Matrix & Stack"
+        note="CAPABILITIES_MATRIX"
+      />
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {skills.map((skill, index) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {categories.map((cat) => {
+          const accentValue =
+            cat.accent === "cyan" ? "text-secondary" : "text-primary"
+          return (
             <motion.div
-              key={skill.name}
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.4, delay: index * 0.05 }}
-              className="group"
+              key={cat.title}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="rounded-[4px] p-6 bg-card border border-border flex flex-col justify-between transition-colors duration-200 hover:bg-substrate-1"
             >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-3">
-                  <span className="font-medium text-[#e4e4e7] group-hover:text-[#00f0ff] transition-colors">{skill.name}</span>
-                  <span className="text-xs text-[#71717a] px-2 py-0.5 rounded bg-[#a855f7]/10 border border-[#a855f7]/20">
-                    {skill.category}
+              <div>
+                <div className="flex items-center justify-between pb-3 mb-4 border-b border-border">
+                  <span className="font-mono text-label-sm uppercase tracking-[0.08em] text-text-tertiary">
+                    {cat.layer}
+                  </span>
+                  <span className={`font-mono text-label-sm ${accentValue}`}>
+                    {"// "}
+                    {cat.accent}
                   </span>
                 </div>
-                <span className="text-sm font-mono text-[#00f0ff]">{skill.level}%</span>
+                <h3 className="font-sans text-headline-sm text-text-primary mb-2">
+                  {cat.title}
+                </h3>
+                <p className="font-mono text-code-snippet text-text-secondary mb-6 leading-relaxed">
+                  {cat.description}
+                </p>
+                <div className="flex flex-col gap-2">
+                  {cat.skills.map((skill) => (
+                    <div
+                      key={skill.name}
+                      className="flex items-center justify-between rounded-[4px] p-2 bg-substrate-1 border border-border font-mono text-label-md"
+                    >
+                      <span className="text-text-primary">{skill.name}</span>
+                      <span className={accentValue}>{skill.level}%</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              
-              {/* Progress Bar */}
-              <div className="h-1.5 bg-[#1f1f2a] rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={isInView ? { width: `${skill.level}%` } : {}}
-                  transition={{ duration: 0.8, delay: 0.3 + index * 0.05 }}
-                  className="h-full bg-gradient-to-r from-[#00f0ff] to-[#a855f7] rounded-full"
-                />
+              <div
+                className={`mt-6 pt-3 border-t border-border font-mono text-label-sm uppercase tracking-[0.08em] text-text-tertiary`}
+              >
+                {cat.footer}
               </div>
             </motion.div>
-          ))}
-        </div>
-
-        {/* Learning */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="mt-12"
-        >
-          <p className="text-sm text-[#71717a] mb-4 font-mono">{"// currently_learning"}</p>
-          <div className="flex flex-wrap gap-2">
-            {["Next.js", "TypeScript", "Tailwind", "Node.js", "Python"].map((tech) => (
-              <motion.span
-                key={tech}
-                whileHover={{ scale: 1.05 }}
-                className="px-4 py-2 text-sm rounded-md bg-[#0a0a0f] border border-[#1f1f2a] text-[#71717a] hover:text-[#00f0ff] hover:border-[#00f0ff]/30 transition-colors cursor-default"
-              >
-                {tech}
-              </motion.span>
-            ))}
-          </div>
-        </motion.div>
+          )
+        })}
       </div>
     </section>
   )
