@@ -4,7 +4,27 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Star, Users, Boxes, Code2, RefreshCw } from "lucide-react"
 import { SectionHeader } from "@/components/section-header"
-import type { GithubStatsResponse } from "@/lib/github"
+import type { ContributionCalendar, GithubStatsResponse } from "@/lib/github"
+
+const CONTRIBUTION_INTENSITY = 5
+
+function intensityIndex(count: number): number {
+  if (count <= 0) return 0
+  if (count < 3) return 1
+  if (count < 6) return 2
+  if (count < 10) return 3
+  return 4
+}
+
+const CELL_BG: Record<number, string> = {
+  0: "bg-substrate-1",
+  1: "bg-primary/25",
+  2: "bg-primary/50",
+  3: "bg-primary/80",
+  4: "bg-secondary",
+}
+
+const LEGEND_BG = [0, 1, 2, 3, 4].map((i) => CELL_BG[i])
 
 function daysAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime()
@@ -33,6 +53,44 @@ function MetricSkeleton() {
         </div>
       ))}
     </>
+  )
+}
+
+function CommitMatrix({
+  calendar,
+  fetchedAt,
+}: {
+  calendar: ContributionCalendar | null
+  fetchedAt?: string
+}) {
+  const hasLive = !!calendar && calendar.weeks.length > 0
+
+  return (
+    <div className="flex items-center justify-between py-2">
+      <span className="w-2 h-2 bg-substrate-2" />
+      {hasLive ? (
+        <div className="flex-1 mx-4 overflow-x-auto pb-1">
+          <div className="grid grid-rows-7 grid-flow-col gap-[3px] w-max">
+            {calendar!.weeks.map((week, weekIndex) =>
+              week.contributionDays.map((day, dayIndex) => (
+                <div
+                  key={`${weekIndex}-${dayIndex}`}
+                  title={`${day.date}: ${day.contributionCount} contribution${
+                    day.contributionCount === 1 ? "" : "s"
+                  }`}
+                  className={`w-2.5 h-2.5 rounded-[2px] ${CELL_BG[intensityIndex(day.contributionCount)]}`}
+                />
+              ))
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="flex-1 mx-4 h-[148px] opacity-40 [background-image:repeating-linear-gradient(0deg,#1a1a24_0_9px,transparent_9px_12px),repeating-linear-gradient(90deg,#1a1a24_0_9px,transparent_9px_12px)]" />
+      )}
+      <span className="font-mono text-label-sm uppercase tracking-[0.08em] text-text-tertiary">
+        {hasLive ? "GRID: LIVE (GRAPHQL)" : "GRID: GREY (STATIC)"}
+      </span>
+    </div>
   )
 }
 
@@ -127,38 +185,36 @@ export function GithubSection() {
 
         {data && (
           <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6">
-            {/* Commit intensity matrix — placeholder netral */}
+            {/* Commit intensity matrix — live GraphQL / neutral fallback */}
             <div className="lg:col-span-5 rounded-[4px] p-6 bg-card border border-border">
               <div className="flex items-center justify-between pb-4 mb-4 border-b border-border font-mono text-code-snippet">
                 <span className="text-text-primary font-semibold">
                   {"// COMMIT_INTENSITY_MATRIX"}
                 </span>
                 <span className="text-text-tertiary text-label-sm uppercase tracking-[0.08em]">
-                  placeholder
+                  {data.contributionCalendar ? "live" : "fallback"}
                 </span>
               </div>
 
-              {/*
-                TODO: perlu GitHub GraphQL API + token untuk contribution calendar
-                asli, tidak tersedia lewat REST publik.
-              */}
-              <div className="flex items-center justify-between py-2">
-                <span className="w-2 h-2 bg-substrate-2" />
-                <div className="flex-1 mx-4 h-[148px] opacity-40 [background-image:repeating-linear-gradient(0deg,#1a1a24_0_9px,transparent_9px_12px),repeating-linear-gradient(90deg,#1a1a24_0_9px,transparent_9px_12px)]" />
-                <span className="font-mono text-label-sm uppercase tracking-[0.08em] text-text-tertiary">
-                  GRID: GREY (STATIC)
-                </span>
-              </div>
+              <CommitMatrix calendar={data.contributionCalendar} />
+
               <div className="flex items-center justify-end gap-2 mt-3 font-mono text-label-sm uppercase tracking-[0.08em] text-text-tertiary">
                 <span>LOW</span>
-                <span className="w-2.5 h-2.5 rounded-[2px] bg-substrate-2 inline-block" />
-                <span className="w-2.5 h-2.5 rounded-[2px] bg-substrate-2 inline-block" />
-                <span className="w-2.5 h-2.5 rounded-[2px] bg-substrate-2 inline-block" />
+                {LEGEND_BG.map((bg, i) => (
+                  <span
+                    key={i}
+                    className={`w-2.5 h-2.5 rounded-[2px] inline-block ${bg}`}
+                  />
+                ))}
                 <span>HIGH</span>
               </div>
               <p className="mt-4 font-mono text-code-snippet text-text-tertiary leading-relaxed border-t border-border pt-4">
-                {`// contribution calendar penuh butuh GraphQL API + token (TODO).
-                // placeholder netral dipertahankan — tanpa data palsu.`}
+                {data.contributionCalendar
+                  ? `// data contribution calendar real via GitHub GraphQL.
+                    // skala 0–4: 0 = tanpa kontribusi, makin terang = makin aktif.
+                    // last_sync: ${data.fetchedAt}.`
+                  : `// GITHUB_TOKEN tidak dikonfigurasi / GraphQL gagal (rate-limit?)
+                    // fallback ke grid netral — tanpa data palsu.`}
               </p>
             </div>
 

@@ -1,3 +1,16 @@
+export interface ContributionDay {
+  date: string
+  contributionCount: number
+}
+
+export interface ContributionWeek {
+  contributionDays: ContributionDay[]
+}
+
+export interface ContributionCalendar {
+  weeks: ContributionWeek[]
+}
+
 export interface GithubRepoSummary {
   name: string
   description: string | null
@@ -18,5 +31,6 @@ export interface GithubStatsResponse {
   topLanguage: string | null
   languages: Record<string, number>
   recentRepos: GithubRepoSummary[]
+  contributionCalendar: ContributionCalendar | null
   fetchedAt: string
 }

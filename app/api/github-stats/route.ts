@@ -1,8 +1,26 @@
 import { NextResponse } from "next/server"
-import type { GithubStatsResponse } from "@/lib/github"
+import type { ContributionCalendar, GithubStatsResponse } from "@/lib/github"
 
 const GITHUB_USERNAME = "fiannnn9090"
 const GITHUB_API = "https://api.github.com"
+const GITHUB_GRAPHQL_API = "https://api.github.com/graphql"
+
+const GRAPHQL_CONTRIBUTIONS_QUERY = `
+  query($login: String!) {
+    user(login: $login) {
+      contributionsCollection {
+        contributionCalendar {
+          weeks {
+            contributionDays {
+              date
+              contributionCount
+            }
+          }
+        }
+      }
+    }
+  }
+`
 
 interface RawRepo {
   name: string
@@ -25,16 +43,67 @@ function headers() {
 }
 
 /*
+ * Ambil contributionCalendar lewat GitHub GraphQL API.
+ * Butuh GITHUB_TOKEN di environment (Authorization: Bearer ${token}).
+ * Kalau token tidak ada / fetch gagal / rate-limited / error GraphQL,
+ * kembalikan null → client pakai tampilan netral (tidak pernah crash,
+ * dan detail token tidak pernah bocor ke client / error response).
+ */
+async function fetchContributionCalendar(): Promise<ContributionCalendar | null> {
+  const token = process.env.GITHUB_TOKEN
+  if (!token) return null
+
+  try {
+    const res = await fetch(GITHUB_GRAPHQL_API, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "User-Agent": "fiannnn9090-portfolio",
+      },
+      body: JSON.stringify({
+        query: GRAPHQL_CONTRIBUTIONS_QUERY,
+        variables: { login: GITHUB_USERNAME },
+      }),
+      cache: "no-store",
+    })
+
+    if (!res.ok) return null
+
+    const json = (await res.json()) as {
+      data?: {
+        user?: {
+          contributionsCollection?: {
+            contributionCalendar?: ContributionCalendar
+          }
+        }
+      }
+      errors?: unknown
+    }
+
+    if (json.errors || !json.data?.user?.contributionsCollection?.contributionCalendar) {
+      return null
+    }
+
+    return json.data.user.contributionsCollection.contributionCalendar
+  } catch {
+    return null
+  }
+}
+
+/*
  * Semua angka GitHub diambil dari GitHub REST API publik di sisi server,
  * tidak ada satu pun yang di-hardcode di UI.
  */
 export async function GET() {
   try {
-    const [userRes, reposRes] = await Promise.all([
+    const calendarPromise = fetchContributionCalendar()
+    const [userRes, reposRes, contributionCalendar] = await Promise.all([
       fetch(`${GITHUB_API}/users/${GITHUB_USERNAME}`, { headers: headers() }),
       fetch(`${GITHUB_API}/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`, {
         headers: headers(),
       }),
+      calendarPromise,
     ])
 
     if (!userRes.ok || !reposRes.ok) {
@@ -92,6 +161,7 @@ export async function GET() {
       topLanguage,
       languages: Object.fromEntries(languageCounts),
       recentRepos,
+      contributionCalendar,
       fetchedAt: new Date().toISOString(),
     }
 
