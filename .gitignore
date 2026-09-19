@@ -12,6 +12,7 @@ __v0_jsx-dev-runtime.ts
 # Common ignores
 node_modules
 .next/
-.DS_StoreBRIEF-REDESAIN-PORTFOLIO.md
+.DS_Store
+BRIEF-REDESAIN-PORTFOLIO.md
 design-references/
 *.report.html
